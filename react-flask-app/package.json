@@ -2,7 +2,6 @@
   "name": "react-flask-app",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://localhost:5000",
   "dependencies": {
     "@mapbox/mapbox-sdk": "^0.16.1",
     "@testing-library/jest-dom": "^5.17.0",
