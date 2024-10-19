@@ -8,7 +8,7 @@ const Map = () => {
   const [map, setMap] = useState(null);
 
   useEffect(() => {
-    mapboxgl.accessToken = "pk.eyJ1IjoiZnJhbmtjaGFuZzEwMDAiLCJhIjoiY20xbGFzcG1hMDNvaTJxbjY3a3N4NWw4dyJ9.W78DlIwDnlVOrCE5F1OnkQ";
+    mapboxgl.accessToken = "YOUR_MAPBOX_ACCESS_TOKEN";
 
     if (!mapboxgl.supported()) {
       alert('Your browser does not support Mapbox GL');
@@ -18,21 +18,27 @@ const Map = () => {
     const initializeMap = () => {
       const map = new mapboxgl.Map({
         container: mapContainerRef.current,
-        style: 'mapbox://styles/mapbox/standard',
+        style: 'mapbox://styles/mapbox/streets-v11', // Use a valid style
         center: [-122.4194, 37.7749],
         zoom: 12,
       });
 
       map.on('load', () => {
-        fetch('/output_new.geojson')
-          .then(response => response.json())
+        fetch('/output.geojson')
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Network response was not ok');
+            }
+            return response.json();
+          })
           .then(geojsonData => {
+            console.log('GeoJSON Data:', geojsonData); // Debug to ensure data is fetched
             map.addSource('points', {
               type: 'geojson',
               data: geojsonData,
               cluster: true,
-              clusterMaxZoom: 14,
-              clusterRadius: 50,
+              clusterMaxZoom: 12, // Adjust max zoom for clustering
+              clusterRadius: 60,  // Adjust cluster radius
             });
 
             addClusterLayers(map);
