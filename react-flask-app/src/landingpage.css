@@ -1,0 +1,46 @@
+/* App.css */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+}
+
+.landing-page {
+  text-align: center;
+  padding: 50px;
+}
+
+.landing-header {
+  margin-bottom: 40px;
+}
+
+h1 {
+  font-size: 2.5rem;
+  color: #333;
+}
+
+p {
+  font-size: 1.2rem;
+  color: #777;
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.landing-button {
+  background-color: #007bff;
+  color: white;
+  padding: 15px 30px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.landing-button:hover {
+  background-color: #0056b3;
+}

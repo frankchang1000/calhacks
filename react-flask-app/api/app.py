@@ -9,9 +9,24 @@ def hello_world():
 
 # Example route for signup
 @app.route('/signup', methods=['GET'])
-def signup():
+def signup_read():
     return "welcome to signup"
 
+@app.route('/signup', methods=['POST'])
+def signup_update():
+    return "welcome to signup"
+  
+@app.route('/toilets', methods=['GET'])
+def toilets_read():
+    return "welcome to toilets"
+
+@app.route('/toilets', methods=['POST'])
+def toilets_update():
+    return "welcome to toilets"
+
+@app.route('/toilet-map', methods=['GET'])
+def toilet_map_read():
+    return "welcome to toilet-map"
 
 # # Example route to get all toilets
 # @app.route('/toilets', methods=['GET'])
