@@ -51,7 +51,7 @@ const Map = () => {
     mapRef.current.on('moveend', () => {
       const center = mapRef.current.getCenter();
       setCurrentCenter([center.lng, center.lat]);
-      setOriginCoords([center.lng, center.lat]);
+      setOriginCoords([37.784247258521404, -122.40282575150562]);
     });
 
     // Add navigation controls
