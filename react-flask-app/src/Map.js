@@ -5,7 +5,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import React, { useEffect, useRef, useState } from 'react';
 import './Map.css';
 
-import { Box, Button } from "@chakra-ui/react";
+import { Box, Button, Image, Text, HStack } from "@chakra-ui/react";
 
 
 const Map = () => {
@@ -225,7 +225,7 @@ const Map = () => {
             "line-cap": "round",
           },
           paint: {
-            "line-color": "#FFDE21",
+            "line-color": "#8F5B4A",
             "line-width": 5,
             "line-opacity": 0.75,
           },
@@ -465,7 +465,12 @@ const Map = () => {
           </div>
         )}
       </div>
+            {/* Logo Positioned in the Bottom Right */}
+      <Box position="fixed" bottom="10px" right="10px">
+            <Image src="/logo.png" alt="Logo" boxSize="100px" />
+      </Box>
     </div>
+    
   );
 };
 
