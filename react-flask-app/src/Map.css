@@ -116,10 +116,48 @@
 .nearest-restrooms {
   position: absolute;
   top: 20px;
-  right: 50px;
+  left: 50px;
   z-index: 10;
   background-color: #ffffffbb;
   padding: 10px;
   border-radius: 10px;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
+}
+#instructions {
+  position: absolute;
+  top: 80px; /* Adjust to position right under the controls with some spacing */
+  right: 50px; /* Align with the input container */
+  width: 320px;
+  max-height: 70%;
+  background-color: #ffffffcc;
+  overflow-y: auto;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  border-radius: 15px;
+  z-index: 20;
+  font-family: sans-serif;
+  display: flex; /* Keep flex for alignment */
+  flex-direction: column; /* Stack items vertically */
+}
+
+.direction-header {
+  display: flex;
+  flex-direction: row;
+  background-color: #c6f6d59b;
+  padding: 20px;
+  align-items: center; /* Center items vertically */
+}
+
+.direction-header span {
+  display: flex; /* Ensure icons are aligned */
+  align-items: center; /* Center icons vertically */
+  margin-right: 10px; /* Adjust space between icon and text */
+}
+
+.direction-header p {
+  margin: 0; /* Remove margin to align text with icons */
+  font-size: 1rem;
+}
+
+#instructions ol {
+  padding: 20px 20px 20px 40px;
 }

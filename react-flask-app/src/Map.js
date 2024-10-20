@@ -248,7 +248,7 @@ const Map = () => {
         distance: Math.round((data.distance / 1000) * 10) / 10,
         instructions: tripInstructions,
       });
-      
+
     } catch (error) {
       console.error("Error fetching route:", error);
     }
