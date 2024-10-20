@@ -7,7 +7,12 @@ const Map = () => {
   const mapContainerRef = useRef(null);
   const mapRef = useRef(null); // Ref for the Mapbox map instance
   const [currentCenter, setCurrentCenter] = useState([-122.4194, 37.7749]);
-
+  const [apiRes, setApiRes] = useState();
+  useEffect(()=>{
+    fetch('/api')
+    .then(response => response.json())
+    .then(data => setApiRes(data.message));
+  },[])
   useEffect(() => {
     mapboxgl.accessToken = "pk.eyJ1IjoiZnJhbmtjaGFuZzEwMDAiLCJhIjoiY20xbGFzcG1hMDNvaTJxbjY3a3N4NWw4dyJ9.W78DlIwDnlVOrCE5F1OnkQ";
 

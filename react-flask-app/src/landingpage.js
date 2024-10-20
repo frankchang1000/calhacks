@@ -1,7 +1,7 @@
 import React from 'react';
 import './landingpage.css'; // You can style the buttons and layout here
 
-function App() {
+function LandingApp() {
   // Handlers for button clicks (you can link to real routes or functionalities later)
   const handleSignUpClick = () => {
     alert("Navigate to Sign Up");
@@ -39,4 +39,4 @@ function App() {
   );
 }
 
-export default App;
+export default LandingApp;
