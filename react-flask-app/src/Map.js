@@ -5,6 +5,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import React, { useEffect, useRef, useState } from 'react';
 import './Map.css';
 
+import { Box, Button } from "@chakra-ui/react";
 
 
 const Map = () => {
@@ -375,10 +376,8 @@ const Map = () => {
   const handleClick = (coords) => {
     setDestinationCoords(coords); // Set the destination coordinates
     // get the route
-    setTimeout(() => {
-      calculateRoute(currentCenter, coords);
-    }, 1000);
-    // calculateRoute(currentCenter, coords);
+
+    calculateRoute(currentCenter, coords);
     
   };
 
@@ -386,7 +385,7 @@ const Map = () => {
   const flyToLocation = (location) => {
     mapRef.current.flyTo({
       center: currentCenter,
-      zoom: 14,
+      zoom: 16,
       essential: true,
       speed: 0.5
     });
