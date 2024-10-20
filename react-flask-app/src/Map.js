@@ -373,10 +373,8 @@ const Map = () => {
   const handleClick = (coords) => {
     setDestinationCoords(coords); // Set the destination coordinates
     // get the route
-    setTimeout(() => {
-      calculateRoute(currentCenter, coords);
-    }, 1000);
-    // calculateRoute(currentCenter, coords);
+
+    calculateRoute(currentCenter, coords);
     
   };
 
