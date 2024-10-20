@@ -9,7 +9,10 @@ import {
 import { GrPowerReset } from "react-icons/gr";
 import { HiOutlineSearch } from "react-icons/hi"; // For Heroicons search icon
 import './Map.css';
+import { Tabs, TabList, Tab, TabPanel, TabPanels } from "@chakra-ui/react";
 
+import { SunIcon, MoonIcon, Search2Icon } from "@chakra-ui/icons";
+import { FaSatellite } from "react-icons/fa6";
 
 
 const Map = () => {
@@ -51,7 +54,6 @@ const Map = () => {
     mapRef.current.on('moveend', () => {
       const center = mapRef.current.getCenter();
       setCurrentCenter([center.lng, center.lat]);
-      setOriginCoords([37.784247258521404, -122.40282575150562]);
     });
 
     // Add navigation controls
@@ -372,60 +374,18 @@ const Map = () => {
     }
   };
   
+  const handleStyleChange = (style) => {
+    mapRef.current.setStyle(style);
+  }
+
+  const [activeTab, setActiveTab] = useState(1);
 
   return (
     <div>
       {/* Map Container */}
       <div className="map-container">
         <div className="map-container" ref={mapContainerRef} />
-      </div>
 
-      {/* Destination Input */}
-      <div
-        className="input-container"
-        onMouseEnter={() => setShowDestinationSearch(true)}
-        onMouseLeave={() => setShowDestinationSearch(false)}
-      >
-        <FaLocationDot className="input-icon" />
-        <input
-          type="text"
-          id="destination"
-          placeholder="Enter destination or double-click on map"
-          value={destinationInput}
-          onChange={(e) => handleInputChange(e, setDestinationInput)}
-          onKeyDown={handleKeyDown} // Make sure this function is defined elsewhere
-          onFocus={() => setShowDestinationSuggestions(true)}
-          onBlur={(e) => {
-            // Set a timeout to delay hiding the suggestions, allowing time for selection
-            setTimeout(() => setShowDestinationSuggestions(false), 200);
-          }}
-        />
-        {showDestinationSearch && destinationInput.trim() && (
-          // <Search2Icon
-          //   className="search-icon"
-          //   onClick={calculateRoute}
-          //   style={{ cursor: "pointer" }}
-          // />
-          <HiOutlineSearch
-            className="search-icon"
-            onClick={calculateRoute}
-            style={{ cursor: "pointer" }}
-          />
-        )}
-        {/* Suggestions List */}
-        {showDestinationSuggestions && destinationSuggestions.length > 0 && (
-          <ul className="suggestions-list">
-            {destinationSuggestions.map((feature) => (
-              <li
-                key={feature.id}
-                onMouseDown={() => handleDestinationSelect(feature)} // Use onMouseDown to ensure the selection happens before blur
-                className="suggestion-item"
-              >
-                {feature.place_name}
-              </li>
-            ))}
-          </ul>
-        )}
       </div>
 
       {/* Directions Display */}
@@ -434,15 +394,9 @@ const Map = () => {
           <div className="direction-header">
             <p>
               <strong>
-                Trip duration: {directions.duration} min ({directions.distance}{" "}
-                km)
+                Trip duration: {directions.duration} min ({directions.distance} km)
               </strong>
             </p>
-
-            {/* Chakra UI Button */}
-            <Button className="resetButton" onClick={handleReset}>
-              <GrPowerReset />
-            </Button>
           </div>
 
           <ol>
@@ -451,9 +405,11 @@ const Map = () => {
             ))}
           </ol>
         </div>
+        
       )}
+
     </div>
   );
 };
-
 export default Map;
+

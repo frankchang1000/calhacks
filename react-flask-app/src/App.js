@@ -8,15 +8,18 @@ import { Routes, Route } from 'react-router-dom';
 
 function App() {
   return (
+    /*
     <Router>
       <Routes>
         <div className="App">
+          
           <Route path="/" element={ < Map /> }/>
           <Route path="/home" element={ < LandingApp /> } />
           <Route path="/add" element={ < AddToilet /> } />  
         </div>
       </Routes>
-    </Router>
+    </Router>*/
+    <Map />
   );
 }
 
