@@ -422,7 +422,7 @@ const Map = () => {
         {/* Render the tabs only when showTabs is true */}
         {showTabs && (
           <div className="nearest-restrooms" style={{ marginTop: '20px' }}>
-            <Tabs orientation="vertical" variant="soft-rounded" colorScheme="blue">
+            <Tabs orientation="vertical" variant="soft-rounded" colorScheme="yellow">
               <TabList>
                 <Tab onClick={() => handleClick([-122.4077797, 37.7844142])}>
                   Mid-Market Pit Stop - Hallidie Plaza (JCDecaux)
