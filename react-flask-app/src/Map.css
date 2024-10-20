@@ -5,3 +5,110 @@
   bottom: 0;
   width: 100%;
 }
+
+/* Input container for destination search */
+.input-container {
+  position: relative;
+  width: 600px;
+  margin: 10px auto;
+  display: flex;
+  align-items: center;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Icon for location dot (FaLocationDot) */
+.input-icon {
+  margin-right: 10px;
+  font-size: 20px;
+  color: #ff4e42; /* Set the color to something noticeable */
+}
+
+/* Search input field */
+#destination {
+  width: 100%;
+  border: none;
+  outline: none;
+  padding: 8px;
+  font-size: 16px;
+}
+
+/* Search button/icon (HiOutlineSearch) */
+.search-icon {
+  position: absolute;
+  right: 10px;
+  font-size: 20px;
+  color: #007bff;
+}
+
+/* Suggestions list dropdown */
+.suggestions-list {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: white;
+  border: 1px solid #ccc;
+  max-height: 150px;
+  overflow-y: auto;
+  border-radius: 5px;
+  z-index: 10;
+}
+
+/* Suggestion item */
+.suggestion-item {
+  padding: 10px;
+  cursor: pointer;
+  border-bottom: 1px solid #eee;
+}
+
+.suggestion-item:hover {
+  background-color: #f1f1f1;
+}
+
+/* Directions display container */
+#instructions {
+  margin-top: 20px;
+  background-color: #f9f9f9;
+  padding: 15px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+/* Direction header (Trip duration and distance) */
+.direction-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+/* Reset button */
+.resetButton {
+  background-color: #007bff;
+  color: white;
+  padding: 5px 10px;
+  font-size: 14px;
+  border-radius: 5px;
+  cursor: pointer;
+  border: none;
+}
+
+.resetButton:hover {
+  background-color: #0056b3;
+}
+
+/* Ordered list for directions */
+#instructions ol {
+  margin-top: 10px;
+  list-style-type: decimal;
+  padding-left: 20px;
+}
+
+#instructions li {
+  margin-bottom: 5px;
+}

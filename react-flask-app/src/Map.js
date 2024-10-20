@@ -1,13 +1,16 @@
-import React, { useRef, useEffect, useState } from 'react';
+import { Button } from "@chakra-ui/react";
+import MapboxGeocoding from '@mapbox/mapbox-sdk/services/geocoding';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import './Map.css';
-import MapboxGeocoding from '@mapbox/mapbox-sdk/services/geocoding';
-import { Button } from "@chakra-ui/react";
-import { GrPowerReset } from "react-icons/gr";
+import React, { useEffect, useRef, useState } from 'react';
 import {
   FaLocationDot,
 } from "react-icons/fa6";
+import { GrPowerReset } from "react-icons/gr";
+import { HiOutlineSearch } from "react-icons/hi"; // For Heroicons search icon
+import './Map.css';
+
+
 
 const Map = () => {
   const mapContainerRef = useRef(null);
@@ -19,7 +22,11 @@ const Map = () => {
   const mapToken = "pk.eyJ1IjoiZnJhbmtjaGFuZzEwMDAiLCJhIjoiY20xbGFzcG1hMDNvaTJxbjY3a3N4NWw4dyJ9.W78DlIwDnlVOrCE5F1OnkQ";
   const [originCoords, setOriginCoords] = useState(null);
   const [geojsonData, setGeojsonData] = useState(null);
-
+  const [destinationInput, setDestinationInput] = useState("");
+  const [destinationSuggestions, setDestinationSuggestions] = useState([]);
+  const [showDestinationSuggestions, setShowDestinationSuggestions] = useState(false);
+  const [showDestinationSearch, setShowDestinationSearch] = useState(false);
+  
   // Initialize Mapbox Geocoding client
   const geocodingClient = MapboxGeocoding({
     accessToken: mapToken,
@@ -193,6 +200,11 @@ const Map = () => {
   }, [destinationCoords]);
 
   const getRoute = async (start, end) => {
+    if (!start || !end || start.length < 2 || end.length < 2) {
+      console.error("Invalid start or end coordinates");
+      return;
+    }
+
     try {
       let url = `https://api.mapbox.com/directions/v5/mapbox/walking/${start[0]},${start[1]};${end[0]},${end[1]}?steps=true&geometries=geojson&overview=full&access_token=${mapToken}`;
 
@@ -310,6 +322,57 @@ const Map = () => {
     return distance;
   };
 
+  //maybe? idk
+  const handleInputChange = (e, setFunction) => {
+    setFunction(e.target.value);
+    if (e.target.value.trim()) {
+      getDestinationSuggestions(e.target.value);
+    } else {
+      setDestinationSuggestions([]);
+    }
+  }  
+  
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      calculateRoute();
+    }
+  }
+
+  const getDestinationSuggestions = async (query) => {
+    try {
+      const response = await geocodingClient.forwardGeocode({
+        query,
+        limit: 5,
+        types: ["place"],
+      })
+      .send();
+
+      setDestinationSuggestions(response.body.features);
+    } catch (error) {
+      console.error("Error getting destination suggestions:", error);
+    }
+  }
+
+  const handleDestinationSelect = (feature) => {
+    setDestinationInput(feature.place_name);
+    setDestinationCoords(feature.center);
+    setShowDestinationSuggestions(false);
+  }
+
+  const calculateRoute = () => {
+    if (!originCoords || !destinationCoords) {
+      console.error("Origin or destination coordinates are not set.");
+      return; // Early exit if coordinates are not valid
+    }
+    
+    if (destinationInput.trim()) {
+      setDestinationSuggestions([]);
+      setDirections(null);
+      getRoute(originCoords, destinationCoords);
+    }
+  };
+  
+
   return (
     <div>
       {/* Map Container */}
@@ -338,7 +401,12 @@ const Map = () => {
           }}
         />
         {showDestinationSearch && destinationInput.trim() && (
-          <Search2Icon
+          // <Search2Icon
+          //   className="search-icon"
+          //   onClick={calculateRoute}
+          //   style={{ cursor: "pointer" }}
+          // />
+          <HiOutlineSearch
             className="search-icon"
             onClick={calculateRoute}
             style={{ cursor: "pointer" }}
