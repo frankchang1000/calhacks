@@ -8,6 +8,8 @@
     "@chakra-ui/react": "^2.10.3",
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
+    "@fontsource/open-sans": "^5.1.0",
+    "@fontsource/raleway": "^5.1.0",
     "@mapbox/mapbox-sdk": "^0.16.1",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",

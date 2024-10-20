@@ -1,4 +1,4 @@
-import { Tab, TabList, Tabs } from "@chakra-ui/react";
+import { Card, Tab, TabList, Tabs, Text } from "@chakra-ui/react";
 import MapboxGeocoding from '@mapbox/mapbox-sdk/services/geocoding';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -413,6 +413,7 @@ const Map = () => {
               size="lg" 
               onClick={handleShowRestroomsClick} 
               boxShadow="lg"
+              fontFamily="Avenir, sans-serif"
             >
               Show Restrooms
             </Button>
@@ -421,8 +422,11 @@ const Map = () => {
 
         {/* Render the tabs only when showTabs is true */}
         {showTabs && (
-          <div className="nearest-restrooms" style={{ marginTop: '20px' }}>
-            <Tabs orientation="vertical" variant="soft-rounded" colorScheme="yellow">
+          <div className="nearest-restrooms" style={{ marginTop: '20px' }}> 
+            <Card display="flex" align="center" margin="2" padding="2" background="#f7f7f7" as="b">
+            <Text fontSize="2xl" fontFamily="Avenir, sans-serif">Five Closest Bathrooms</Text>
+            </Card>
+            <Tabs orientation="vertical" variant="soft-rounded" colorScheme="yellow" fontFamily="Avenir, sans-serif">
               <TabList>
                 <Tab onClick={() => handleClick([-122.4077797, 37.7844142])}>
                   Mid-Market Pit Stop - Hallidie Plaza (JCDecaux)
