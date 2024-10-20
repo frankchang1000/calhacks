@@ -1,10 +1,6 @@
 import React from 'react';
-import Map from './Map';
-import LandingApp from './landingpage'
-import AddToilet from './addtoilet';
 import './App.css';
-import { BrowserRouter as Router } from 'react-router-dom';
-import { Routes, Route } from 'react-router-dom';
+import Map from './Map';
 
 function App() {
   return (

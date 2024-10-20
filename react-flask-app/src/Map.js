@@ -185,21 +185,6 @@ const Map = () => {
     };
   }, []); // Empty dependency array ensures useEffect runs once
 
-  // Update nearest restrooms whenever originCoords change
-  useEffect(() => {
-    if (originCoords && geojsonData) {
-      findNearestRestrooms();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [originCoords, geojsonData]);
-
-  // Calculate route when destinationCoords change
-  useEffect(() => {
-    if (originCoords && destinationCoords) {
-      getRoute(originCoords, destinationCoords);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [destinationCoords]);
 
   const getRoute = async (start, end) => {
     if (!start || !end || start.length < 2 || end.length < 2) {
@@ -361,22 +346,34 @@ const Map = () => {
     setShowDestinationSuggestions(false);
   }
 
-  const calculateRoute = () => {
-    if (!originCoords || !destinationCoords) {
+  const calculateRoute = (origin, destination) => {
+    if (!origin || !destination) {
       console.error("Origin or destination coordinates are not set.");
       return; // Early exit if coordinates are not valid
     }
+
+    getRoute(origin, destination);
+
     
-    if (destinationInput.trim()) {
-      setDestinationSuggestions([]);
-      setDirections(null);
-      getRoute(originCoords, destinationCoords);
-    }
+    
   };
   
   const handleStyleChange = (style) => {
     mapRef.current.setStyle(style);
   }
+
+  const restrooms = [
+    { name: "Mid-Market Pit Stop - Hallidie Plaza (JCDecaux)", coords: [-122.4077797, 37.7844142] },
+    { name: "Union Square, Drinking Fountain/Cooler", coords: [-122.40697736, 37.787879229999994] },
+    { name: "Salvation Army Headquarters", coords: [-122.4020001, 37.7814174] },
+    { name: "SoMa Pit Stop - 6th and Natoma streets", coords: [-122.4077046, 37.780182] },
+    { name: "Tenderloin Pit Stop - Taylor and Turk streets", coords: [-122.4108252, 37.7832058] }
+  ];
+
+  const handleClick = (coords) => {
+    setDestinationCoords(coords); // Set the destination coordinates
+  };
+
 
   const [activeTab, setActiveTab] = useState(1);
 
@@ -385,6 +382,42 @@ const Map = () => {
       {/* Map Container */}
       <div className="map-container">
         <div className="map-container" ref={mapContainerRef} />
+
+        {/* Find Nearest Restroom Selector */}
+        <div className = "nearest-restrooms">
+          <Tabs orientation = 'vertical' variant = "soft-rounded" colorScheme = "blue">
+            <TabList>
+              <Tab
+                onClick = {() => handleClick([-122.4077797, 37.7844142])}
+              >
+                Mid-Market Pit Stop - Hallidie Plaza (JCDecaux)
+              </Tab>
+              <Tab
+                onClick = {() => handleClick([-122.40697736, 37.787879229999994])}
+              >
+                Union Square, Drinking Fountain/Cooler
+              </Tab>
+              <Tab
+                onClick = {() => handleClick([-122.4020001, 37.7814174])}
+              >
+                Salvation Army Headquarters
+              </Tab>
+              <Tab
+                onClick = {() => handleClick([-122.4077046, 37.780182])}
+              >
+                SoMa Pit Stop - 6th and Natoma streets
+              </Tab>
+              <Tab
+                onClick = {() => handleClick([-122.4108252, 37.7832058])}
+              >
+                Tenderloin Pit Stop - Taylor and Turk streets
+              </Tab>
+    
+            </TabList>
+
+          </Tabs>
+
+        </div>
 
       </div>
 
