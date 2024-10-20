@@ -51,11 +51,12 @@ const Map = () => {
     });
 
     // Update center state on move end
+    /*
     mapRef.current.on('moveend', () => {
       const center = mapRef.current.getCenter();
       setCurrentCenter([center.lng, center.lat]);
     });
-
+  */
     // Add navigation controls
     mapRef.current.addControl(new mapboxgl.NavigationControl());
 
@@ -372,6 +373,10 @@ const Map = () => {
 
   const handleClick = (coords) => {
     setDestinationCoords(coords); // Set the destination coordinates
+
+    // get the route
+    calculateRoute(currentCenter, coords);
+    
   };
 
 
