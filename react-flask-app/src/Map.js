@@ -39,7 +39,7 @@ const Map = () => {
     // Create the map instance
     mapRef.current = new mapboxgl.Map({
       container: mapContainerRef.current,
-      style: 'mapbox://styles/mapbox/streets-v11',
+      style: 'mapbox://styles/mapbox/standard',
       center: currentCenter,
       zoom: 10,
       doubleClickZoom: false,
@@ -79,11 +79,11 @@ const Map = () => {
               'circle-color': [
                 'step',
                 ['get', 'point_count'],
-                '#51bbd6',
+                '#8F5B4A',
                 50,
-                '#f1f075',
+                '#FFDC51',
                 100,
-                '#f28cb1',
+                '#FFDC51',
               ],
               'circle-radius': [
                 'step',
@@ -115,7 +115,7 @@ const Map = () => {
             source: 'points',
             filter: ['!', ['has', 'point_count']],
             paint: {
-              'circle-color': '#11b4da',
+              'circle-color': '#70FF1D',
               'circle-radius': 6,
               'circle-stroke-width': 1,
               'circle-stroke-color': '#fff',
@@ -409,7 +409,7 @@ const Map = () => {
         {!showTabs && (
           <Box display="flex" justifyContent="center" mt={4}>
             <Button 
-              colorScheme="blue" 
+              color = '8F5B4A' 
               size="lg" 
               onClick={handleShowRestroomsClick} 
               boxShadow="lg"
