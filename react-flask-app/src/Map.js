@@ -225,7 +225,7 @@ const Map = () => {
             "line-cap": "round",
           },
           paint: {
-            "line-color": "#123499",
+            "line-color": "#FFDE21",
             "line-width": 5,
             "line-opacity": 0.75,
           },
