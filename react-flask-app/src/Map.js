@@ -5,7 +5,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import React, { useEffect, useRef, useState } from 'react';
 import './Map.css';
 
-import { Box, Button, Image, Text, HStack } from "@chakra-ui/react";
+import { Box, Button, Image, HStack } from "@chakra-ui/react";
 
 
 const Map = () => {
