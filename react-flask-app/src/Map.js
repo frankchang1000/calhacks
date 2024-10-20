@@ -1,25 +1,16 @@
-import { Button } from "@chakra-ui/react";
+import { Tab, TabList, Tabs } from "@chakra-ui/react";
 import MapboxGeocoding from '@mapbox/mapbox-sdk/services/geocoding';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import React, { useEffect, useRef, useState } from 'react';
-import {
-  FaLocationDot,
-} from "react-icons/fa6";
-import { GrPowerReset } from "react-icons/gr";
-import { HiOutlineSearch } from "react-icons/hi"; // For Heroicons search icon
 import './Map.css';
-import { Tabs, TabList, Tab, TabPanel, TabPanels } from "@chakra-ui/react";
 
-import { SunIcon, MoonIcon, Search2Icon } from "@chakra-ui/icons";
-import { FaSatellite } from "react-icons/fa6";
-import { Box } from "@chakra-ui/react";
 
 
 const Map = () => {
   const mapContainerRef = useRef(null);
   const mapRef = useRef(null);
-  const [currentCenter, setCurrentCenter] = useState([-122.4194, 37.7749]);
+  const [currentCenter, setCurrentCenter] = useState([-122.40311842433256, 37.784493375240594]);
   const [nearestRestrooms, setNearestRestrooms] = useState([]);
   const [directions, setDirections] = useState(null);
   const [destinationCoords, setDestinationCoords] = useState(null);
@@ -383,9 +374,11 @@ const Map = () => {
 
   const handleClick = (coords) => {
     setDestinationCoords(coords); // Set the destination coordinates
-
     // get the route
-    calculateRoute(currentCenter, coords);
+    setTimeout(() => {
+      calculateRoute(currentCenter, coords);
+    }, 1000);
+    // calculateRoute(currentCenter, coords);
     
   };
 
