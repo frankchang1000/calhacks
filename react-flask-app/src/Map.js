@@ -5,6 +5,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import React, { useEffect, useRef, useState } from 'react';
 import './Map.css';
 
+import { Box, Button } from "@chakra-ui/react";
 
 
 const Map = () => {
@@ -21,6 +22,8 @@ const Map = () => {
   const [destinationSuggestions, setDestinationSuggestions] = useState([]);
   const [showDestinationSuggestions, setShowDestinationSuggestions] = useState(false);
   const [showDestinationSearch, setShowDestinationSearch] = useState(false);
+  const [showTabs, setShowTabs] = useState(false); // Manage tabs visibility
+
   
   // Initialize Mapbox Geocoding client
   const geocodingClient = MapboxGeocoding({
@@ -378,6 +381,21 @@ const Map = () => {
     
   };
 
+  // fly in when button clicked
+  const flyToLocation = (location) => {
+    mapRef.current.flyTo({
+      center: currentCenter,
+      zoom: 16,
+      essential: true,
+      speed: 0.5
+    });
+  };
+
+  const handleShowRestroomsClick = () => {
+    setShowTabs(true);
+    flyToLocation(currentCenter); // Call flyToLocation when button is clicked
+  };
+
 
   const [activeTab, setActiveTab] = useState(1);
 
@@ -387,66 +405,70 @@ const Map = () => {
       <div className="map-container">
         <div className="map-container" ref={mapContainerRef} />
 
-        {/* Find Nearest Restroom Selector */}
-        <div className = "nearest-restrooms">
-          <Tabs orientation = 'vertical' variant = "soft-rounded" colorScheme = "blue">
-            <TabList>
-              <Tab
-                onClick = {() => handleClick([-122.4077797, 37.7844142])}
-              >
-                Mid-Market Pit Stop - Hallidie Plaza (JCDecaux)
-              </Tab>
-              <Tab
-                onClick = {() => handleClick([-122.40697736, 37.787879229999994])}
-              >
-                Union Square, Drinking Fountain/Cooler
-              </Tab>
-              <Tab
-                onClick = {() => handleClick([-122.4020001, 37.7814174])}
-              >
-                Salvation Army Headquarters
-              </Tab>
-              <Tab
-                onClick = {() => handleClick([-122.4077046, 37.780182])}
-              >
-                SoMa Pit Stop - 6th and Natoma streets
-              </Tab>
-              <Tab
-                onClick = {() => handleClick([-122.4108252, 37.7832058])}
-              >
-                Tenderloin Pit Stop - Taylor and Turk streets
-              </Tab>
-    
-            </TabList>
+        {/* Conditionally render the button only if tabs are not shown */}
+        {!showTabs && (
+          <Box display="flex" justifyContent="center" mt={4}>
+            <Button 
+              colorScheme="blue" 
+              size="lg" 
+              onClick={handleShowRestroomsClick} 
+              boxShadow="lg"
+            >
+              Show Restrooms
+            </Button>
+          </Box>
+        )}
 
-          </Tabs>
-
-        </div>
-
+        {/* Render the tabs only when showTabs is true */}
+        {showTabs && (
+          <div className="nearest-restrooms" style={{ marginTop: '20px' }}>
+            <Tabs orientation="vertical" variant="soft-rounded" colorScheme="blue">
+              <TabList>
+                <Tab onClick={() => handleClick([-122.4077797, 37.7844142])}>
+                  Mid-Market Pit Stop - Hallidie Plaza (JCDecaux)
+                </Tab>
+                <Tab onClick={() => handleClick([-122.40697736, 37.787879229999994])}>
+                  Union Square, Drinking Fountain/Cooler
+                </Tab>
+                <Tab onClick={() => handleClick([-122.4020001, 37.7814174])}>
+                  Salvation Army Headquarters
+                </Tab>
+                <Tab onClick={() => handleClick([-122.4077046, 37.780182])}>
+                  SoMa Pit Stop - 6th and Natoma streets
+                </Tab>
+                <Tab onClick={() => handleClick([-122.4108252, 37.7832058])}>
+                  Tenderloin Pit Stop - Taylor and Turk streets
+                </Tab>
+              </TabList>
+            </Tabs>
+          </div>
+        )}
       </div>
 
-      <div className="map-controls">  
-      {/* Directions Display */}
-      {directions && (
-        <div id="instructions">
-          <div className="direction-header">
-            <p>
-              <strong>
-                Trip duration: {directions.duration} min ({directions.distance} km)
-              </strong>
-            </p>
-          </div>
+      <div className="map-controls">
+        {/* Directions Display */}
+        {directions && (
+          <div id="instructions">
+            <div className="direction-header">
+              <p>
+                <strong>
+                  Trip duration: {directions.duration} min ({directions.distance} km)
+                </strong>
+              </p>
+            </div>
 
-          <ol>
-            {directions.instructions.map((instruction, index) => (
-              <li key={index}>{instruction}</li>
-            ))}
-          </ol>
-        </div>
-      )}
-    </div>
+            <ol>
+              {directions.instructions.map((instruction, index) => (
+                <li key={index}>{instruction}</li>
+              ))}
+            </ol>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
+
+
 export default Map;
 
