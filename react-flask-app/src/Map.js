@@ -2,14 +2,31 @@ import React, { useRef, useEffect, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import './Map.css';
+import MapboxGeocoding from '@mapbox/mapbox-sdk/services/geocoding';
+import { Button } from "@chakra-ui/react";
+import { GrPowerReset } from "react-icons/gr";
+import {
+  FaLocationDot,
+} from "react-icons/fa6";
 
 const Map = () => {
   const mapContainerRef = useRef(null);
-  const mapRef = useRef(null); // Ref for the Mapbox map instance
+  const mapRef = useRef(null);
   const [currentCenter, setCurrentCenter] = useState([-122.4194, 37.7749]);
+  const [nearestRestrooms, setNearestRestrooms] = useState([]);
+  const [directions, setDirections] = useState(null);
+  const [destinationCoords, setDestinationCoords] = useState(null);
+  const mapToken = "pk.eyJ1IjoiZnJhbmtjaGFuZzEwMDAiLCJhIjoiY20xbGFzcG1hMDNvaTJxbjY3a3N4NWw4dyJ9.W78DlIwDnlVOrCE5F1OnkQ";
+  const [originCoords, setOriginCoords] = useState(null);
+  const [geojsonData, setGeojsonData] = useState(null);
+
+  // Initialize Mapbox Geocoding client
+  const geocodingClient = MapboxGeocoding({
+    accessToken: mapToken,
+  });
 
   useEffect(() => {
-    mapboxgl.accessToken = "pk.eyJ1IjoiZnJhbmtjaGFuZzEwMDAiLCJhIjoiY20xbGFzcG1hMDNvaTJxbjY3a3N4NWw4dyJ9.W78DlIwDnlVOrCE5F1OnkQ";
+    mapboxgl.accessToken = mapToken;
 
     // Initialize the map only once
     if (mapRef.current) return;
@@ -17,7 +34,7 @@ const Map = () => {
     // Create the map instance
     mapRef.current = new mapboxgl.Map({
       container: mapContainerRef.current,
-      style: 'mapbox://styles/mapbox/standard', // Use the style you specified
+      style: 'mapbox://styles/mapbox/streets-v11',
       center: currentCenter,
       zoom: 10,
       doubleClickZoom: false,
@@ -27,6 +44,7 @@ const Map = () => {
     mapRef.current.on('moveend', () => {
       const center = mapRef.current.getCenter();
       setCurrentCenter([center.lng, center.lat]);
+      setOriginCoords([center.lng, center.lat]);
     });
 
     // Add navigation controls
@@ -37,6 +55,8 @@ const Map = () => {
       fetch('/output.geojson')
         .then(response => response.json())
         .then(geojsonData => {
+          setGeojsonData(geojsonData); // Store GeoJSON data in state
+
           mapRef.current.addSource('points', {
             type: 'geojson',
             data: geojsonData,
@@ -45,7 +65,6 @@ const Map = () => {
             clusterRadius: 50,
           });
 
-          // Add cluster layers
           mapRef.current.addLayer({
             id: 'clusters',
             type: 'circle',
@@ -73,7 +92,6 @@ const Map = () => {
             },
           });
 
-          // Add cluster count labels
           mapRef.current.addLayer({
             id: 'cluster-count',
             type: 'symbol',
@@ -86,7 +104,6 @@ const Map = () => {
             },
           });
 
-          // Add unclustered point layer
           mapRef.current.addLayer({
             id: 'unclustered-point',
             type: 'circle',
@@ -121,23 +138,27 @@ const Map = () => {
           // Click event for unclustered points
           mapRef.current.on('click', 'unclustered-point', (e) => {
             const coordinates = e.features[0].geometry.coordinates.slice();
-            const { name, resource_type } = e.features[0].properties;
+            const properties = e.features[0].properties;
 
-            // Ensure the popup appears over the correct location
+            let popupContent = "";
+            Object.entries(properties).forEach(([key, value]) => {
+              popupContent += `${key}: ${value}<br>`;
+            });
+
             while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
               coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
             }
 
             new mapboxgl.Popup()
               .setLngLat(coordinates)
-              .setHTML(`<strong>${name}</strong><br>${resource_type}`)
+              .setHTML(popupContent)
               .addTo(mapRef.current);
           });
 
-          // Change cursor to pointer when over clusters
           mapRef.current.on('mouseenter', 'clusters', () => {
             mapRef.current.getCanvas().style.cursor = 'pointer';
           });
+
           mapRef.current.on('mouseleave', 'clusters', () => {
             mapRef.current.getCanvas().style.cursor = '';
           });
@@ -155,9 +176,214 @@ const Map = () => {
     };
   }, []); // Empty dependency array ensures useEffect runs once
 
+  // Update nearest restrooms whenever originCoords change
+  useEffect(() => {
+    if (originCoords && geojsonData) {
+      findNearestRestrooms();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [originCoords, geojsonData]);
+
+  // Calculate route when destinationCoords change
+  useEffect(() => {
+    if (originCoords && destinationCoords) {
+      getRoute(originCoords, destinationCoords);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [destinationCoords]);
+
+  const getRoute = async (start, end) => {
+    try {
+      let url = `https://api.mapbox.com/directions/v5/mapbox/walking/${start[0]},${start[1]};${end[0]},${end[1]}?steps=true&geometries=geojson&overview=full&access_token=${mapToken}`;
+
+      const response = await fetch(url, { method: "GET" });
+      const json = await response.json();
+
+      if (!json.routes || json.routes.length === 0) {
+        console.error("No routes found");
+        return;
+      }
+
+      const data = json.routes[0];
+      const route = data.geometry.coordinates;
+      const geojson = {
+        type: "Feature",
+        properties: {},
+        geometry: {
+          type: "LineString",
+          coordinates: route,
+        },
+      };
+
+      if (mapRef.current.getSource("route")) {
+        mapRef.current.getSource("route").setData(geojson);
+      } else {
+        mapRef.current.addLayer({
+          id: "route",
+          type: "line",
+          source: {
+            type: "geojson",
+            data: geojson,
+          },
+          layout: {
+            "line-join": "round",
+            "line-cap": "round",
+          },
+          paint: {
+            "line-color": "#123499",
+            "line-width": 5,
+            "line-opacity": 0.75,
+          },
+        });
+      }
+
+      const bounds = new mapboxgl.LngLatBounds();
+      route.forEach((coord) => bounds.extend(coord));
+      mapRef.current.fitBounds(bounds, {
+        padding: 50,
+      });
+
+      const steps = data.legs[0].steps;
+      const tripInstructions = steps.map((step) => step.maneuver.instruction);
+      setDirections({
+        duration: Math.floor(data.duration / 60),
+        distance: Math.round((data.distance / 1000) * 10) / 10,
+        instructions: tripInstructions,
+      });
+    } catch (error) {
+      console.error("Error fetching route:", error);
+    }
+  };
+
+  const handleReset = () => {
+    setDestinationCoords(null);
+    setNearestRestrooms([]);
+    setDirections(null);
+
+    // Remove the route layer from the map if it exists
+    if (mapRef.current.getSource("route")) {
+      mapRef.current.getSource("route").setData({
+        type: "FeatureCollection",
+        features: [],
+      });
+    }
+  };
+
+  const handleRestroomSelect = (restroom) => {
+    setDestinationCoords(restroom.geometry.coordinates);
+    // Fly to the selected restroom
+    mapRef.current.flyTo({ center: restroom.geometry.coordinates, zoom: 14 });
+  };
+
+  const findNearestRestrooms = () => {
+    if (!geojsonData || !originCoords) return;
+
+    // Compute distances to each restroom
+    const featuresWithDistance = geojsonData.features.map((feature) => {
+      const coords = feature.geometry.coordinates;
+      const distance = computeDistance(originCoords, coords);
+      return { ...feature, distance };
+    });
+
+    // Sort features by distance
+    featuresWithDistance.sort((a, b) => a.distance - b.distance);
+
+    // Get the 5 nearest restrooms
+    const nearest = featuresWithDistance.slice(0, 5);
+    setNearestRestrooms(nearest);
+  };
+
+  const computeDistance = (coord1, coord2) => {
+    const R = 6371; // Earth's radius in km
+    const lat1 = (coord1[1] * Math.PI) / 180;
+    const lat2 = (coord2[1] * Math.PI) / 180;
+    const deltaLat = lat2 - lat1;
+    const deltaLon = ((coord2[0] - coord1[0]) * Math.PI) / 180;
+    const a =
+      Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) +
+      Math.cos(lat1) *
+        Math.cos(lat2) *
+        Math.sin(deltaLon / 2) *
+        Math.sin(deltaLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const distance = R * c;
+    return distance;
+  };
+
   return (
-    <div className="map-wrapper">
-      <div className="map-container" ref={mapContainerRef} />
+    <div>
+      {/* Map Container */}
+      <div className="map-container">
+        <div className="map-container" ref={mapContainerRef} />
+      </div>
+
+      {/* Destination Input */}
+      <div
+        className="input-container"
+        onMouseEnter={() => setShowDestinationSearch(true)}
+        onMouseLeave={() => setShowDestinationSearch(false)}
+      >
+        <FaLocationDot className="input-icon" />
+        <input
+          type="text"
+          id="destination"
+          placeholder="Enter destination or double-click on map"
+          value={destinationInput}
+          onChange={(e) => handleInputChange(e, setDestinationInput)}
+          onKeyDown={handleKeyDown} // Make sure this function is defined elsewhere
+          onFocus={() => setShowDestinationSuggestions(true)}
+          onBlur={(e) => {
+            // Set a timeout to delay hiding the suggestions, allowing time for selection
+            setTimeout(() => setShowDestinationSuggestions(false), 200);
+          }}
+        />
+        {showDestinationSearch && destinationInput.trim() && (
+          <Search2Icon
+            className="search-icon"
+            onClick={calculateRoute}
+            style={{ cursor: "pointer" }}
+          />
+        )}
+        {/* Suggestions List */}
+        {showDestinationSuggestions && destinationSuggestions.length > 0 && (
+          <ul className="suggestions-list">
+            {destinationSuggestions.map((feature) => (
+              <li
+                key={feature.id}
+                onMouseDown={() => handleDestinationSelect(feature)} // Use onMouseDown to ensure the selection happens before blur
+                className="suggestion-item"
+              >
+                {feature.place_name}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
+      {/* Directions Display */}
+      {directions && (
+        <div id="instructions">
+          <div className="direction-header">
+            <p>
+              <strong>
+                Trip duration: {directions.duration} min ({directions.distance}{" "}
+                km)
+              </strong>
+            </p>
+
+            {/* Chakra UI Button */}
+            <Button className="resetButton" onClick={handleReset}>
+              <GrPowerReset />
+            </Button>
+          </div>
+
+          <ol>
+            {directions.instructions.map((instruction, index) => (
+              <li key={index}>{instruction}</li>
+            ))}
+          </ol>
+        </div>
+      )}
     </div>
   );
 };
