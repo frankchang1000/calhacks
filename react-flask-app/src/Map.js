@@ -366,9 +366,9 @@ const Map = () => {
     }
     
     if (destinationInput.trim()) {
-      setDestinationSuggestions([]);
-      setDirections(null);
-      getRoute(originCoords, destinationCoords);
+      // setDestinationSuggestions([]);
+      // setDirections(null);
+      // getRoute(originCoords, destinationCoords);
     }
   };
   
@@ -413,7 +413,7 @@ const Map = () => {
           />
         )}
         {/* Suggestions List */}
-        {showDestinationSuggestions && destinationSuggestions.length > 0 && (
+        {showDestinationSuggestions && destinationSuggestions?.length > 0 && (
           <ul className="suggestions-list">
             {destinationSuggestions.map((feature) => (
               <li
