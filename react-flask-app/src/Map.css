@@ -112,3 +112,14 @@
 #instructions li {
   margin-bottom: 5px;
 }
+
+.nearest-restrooms {
+  position: absolute;
+  top: 20px;
+  right: 50px;
+  z-index: 10;
+  background-color: #ffffffbb;
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
+}
