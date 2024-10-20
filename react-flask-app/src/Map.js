@@ -250,6 +250,13 @@ const Map = () => {
         distance: Math.round((data.distance / 1000) * 10) / 10,
         instructions: tripInstructions,
       });
+
+      console.log('Setting directions with:', {
+        duration: Math.floor(data.duration / 60),
+        distance: Math.round((data.distance / 1000) * 10) / 10,
+        instructions: tripInstructions,
+      });
+      
     } catch (error) {
       console.error("Error fetching route:", error);
     }
@@ -426,6 +433,7 @@ const Map = () => {
 
       </div>
 
+      <div className="map-controls">  
       {/* Directions Display */}
       {directions && (
         <div id="instructions">
@@ -443,9 +451,8 @@ const Map = () => {
             ))}
           </ol>
         </div>
-        
       )}
-
+    </div>
     </div>
   );
 };
